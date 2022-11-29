@@ -1,0 +1,36 @@
+\documentclass[10pt, titlepage]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath, xcolor}
+\usepackage{amsfonts}
+\usepackage{csquotes}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{tcolorbox}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\let\oldproof\proof
+\renewcommand{\proof}{\color{blue}\oldproof[\unskip\nopunct]}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\thm}[2] {\begin{tcolorbox}[colframe=darkgray] {\bf #1:} {\itshape #2} \end{tcolorbox}}
+\newcommand{\pf}[1] {\begin{tcolorbox}[colback=white,colframe=darkgray]\proof {\bf Proof:} #1 \end{tcolorbox}}
+\title{\bf Code Obfuscation and Deobfuscation}
+\author{Mario Fares and Austin Wilson}
+\begin{document}
+
+\maketitle{}
+
+\tableofcontents
+\include{coverletter}
+% OUTLINE:
+%     Obfuscation of Basic Operations
+%     Obfuscation of Data Types 
+
+\end{document}
+
