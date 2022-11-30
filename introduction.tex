@@ -1,1 +1,18 @@
 \section{Introduction}
+In essential programming doctrine, it's considered ``best practice'' to write code that
+is concise, understandable, and simple. This paradigm is great for sharing ideas
+with other programmers, but doesn't hold up when we consider some business and 
+security realities of the world. For one, having unknown programmers understand
+your code is not always part of the goal; a company that produces software may
+want the code that they write to be protected from being ripped off by others
+for profit. Similarly, if code is easy to understand and contains any vulnerabilities, 
+those vulnerabilities will be easier to spot and exploit by unknown, possibly
+malicious actors. Even for relatively secure code, understandability can reveal
+too much of its innerworkings to the public and result in an attack.
+\par So, programmers want to write code that is understandable to the people 
+they work with, but release code that isn't. How can we synthesize 
+these conflicting goals? The primary method is {\itshape software obfuscation}.
+Obfuscation is a process performed on code that transforms it into other code
+which performs essentially the same operations, but is much more difficult to 
+understand or emulate. There are several technical ways to do this, obfuscating
+the control flow of 
