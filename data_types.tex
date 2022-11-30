@@ -1,0 +1,138 @@
+\section{Data Types}
+\subsection{Introduction to Data Types}
+A data type is a construct in programming that defines what kind of data a
+variable can hold and the operations that a programmer can do with this type.
+For those who are familiar with programming, integers, floating point numbers,
+booleans and strings come to mind. Of course, we can represent much more than
+these primitive types by creating a new type and defining its basic
+operations. We may for example represent a polynomial and define the addition
+of two polynomials as adding the coefficients of the corresponding
+same degree variable. There are endless possibilities to represent data in
+most programming languages.
+
+The discussion of data types is important as creating new types, changing
+between them, and using different operations for the same type is one common
+method used in code obfuscation. For example, instead of working with a boolean
+$ B $ to check a condition, we can use two integers $ p $ and $ q $, both of
+which we can manipulate using integer arithmetic. Hence, wherever we use $ B $,
+we may now, for example, add the values of $ p $ and $ q $ and if the sum is
+even, that would be equivalent to $ B $ being true.
+
+\subsection{Representing Data Types and Their Operations as Matrices}
+One method of obfuscation that we can employ is the use of matrices to obscure
+data types and their operations. An easy example would be to represent a
+rational number, what would often be a floating point number in programs, as a
+matrix.
+
+Let us say we have a variable $ x $, a rational number, that we wish to
+represent as a matrix $ A $. We represent this relation as $ x \rightsquigarrow
+A $, which means that $ x $ is obfuscated by $ A $. At this point, we need to
+define two functions that will help us move between the data type and the
+obfuscation.
+
+Our first function is called the abstraction function denoted by $ af: D \to E
+$ and is
+defined as follows:
+\begin{equation*}
+    x \rightsquigarrow A \Leftrightarrow x = af (A)
+\end{equation*}
+Our abstraction function will allow us to retrieve the original value of our
+data type using the obfuscation that we have created, in this case $ A $. The
+abstraction function is surjective, as there could be several possible
+obfuscations that represent the same value. This characteristic allows for less
+predictability in the generated code and thus creates less identifiable
+patterns that could help someone reverse engineer an application.
+
+Our second function is called the conversion function denoted by $ cf: E \to D
+$ and is defined as follows:
+\begin{equation*}
+    cf (n) = A
+\end{equation*}
+Our conversion function will take $ x $, what we want to obfuscate, as an input
+and output the obfuscation $ A $. This function is the inverse of $ af $.
+
+Now back to the realm of matrices, we need to define our aforementioned
+functions. One example would be to have $ cf $ generate an $ A $ such that $ af
+$ simply calculates the determinant of $ A $ yielding $ x $. Thus, we may for
+example define $ cf $ as follows
+\begin{equation*}
+    cf(x)
+    =
+    \begin{bmatrix}
+        x & a \\
+        0 & 1
+    \end{bmatrix}
+\end{equation*}
+In this example, $ a $ can be absolutely any number and the abstraction
+function would simply be
+\begin{equation*}
+    af \left(
+    \begin{bmatrix}
+        a & b \\
+        c & d
+    \end{bmatrix}
+    \right)
+    =
+    \det
+    \begin{bmatrix}
+        a & b \\
+        c & d
+    \end{bmatrix}
+    = ad - bc
+\end{equation*}
+We can now test our 2 functions
+\begin{equation*}
+    af(cf(x)) = x - a(0) = x
+\end{equation*}
+It works! This is not enough, however, as we still need to define operations
+that correspond to basic arithmetic operations. Let us take addition as an
+example. We need a function \textbf{plus} such that
+\begin{equation*}
+    x + y \rightsquigarrow \boldmath{plus(A, B)} : x \rightsquigarrow A, y
+    \rightsquigarrow B
+\end{equation*}
+\textbf{plus} can then be defined as
+\begin{equation*}
+    plus\left(
+    \begin{bmatrix}
+        x & a \\
+        0 & 1
+    \end{bmatrix},
+    \begin{bmatrix}
+        y & b \\
+        0 & 1
+    \end{bmatrix}
+    \right)
+    =
+    \begin{bmatrix}
+        x + y & a + b \\
+        0     & 1
+    \end{bmatrix}
+\end{equation*}
+We can define many more operations beyond addition such as multiplication,
+division, subtraction, exponentiation, etc. It is important for these
+operations to be defined for our matrices to make our obfuscated code harder to
+reverse engineer. It would not be much use to simply represent numbers as
+matrices and then convert them back whenever we want to perform arithmetic or
+other operations. Moreover, the way we define each operation should also be
+sufficiently complex.
+
+It is therefore worth noting that the example above is too simple an
+obfuscation to be used in the real world, but it gives a very good sense of how
+obfuscation works. A better example, as proposed by Drape et al., would be to
+have $ n $ be an eigenvector of a $ 2 \times 2 $ matrix. We would then fix the
+second eigenvalue and define a more robust conversion function that is harder
+to decipher. If we wish to make our obfuscation stronger, we can make our
+matrix bigger for example.
+
+
+\subsection{Obfuscating Matrices and Their Operations}
+The matrix counts as a data type itself, and in the spirit of this paper, it is
+also possible to obfuscate matrices and their operations as well. Converting a
+number into a matrix as we have seen and then obfuscating that matrix makes our
+generated program even harder to decipher, which is what we want.
+
+There are several ways to do obfuscate a matrix, and one that is prominent is
+splitting the matrix into a set of several smaller matrices, called the
+\textbf{split components}. It follows that matrix operations are again defined
+in terms of these components.
