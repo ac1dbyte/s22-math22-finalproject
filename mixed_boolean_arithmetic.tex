@@ -1,0 +1,104 @@
+\section{Mixed Boolean Arithmetic}
+\subsection{Introduction to Mixed Boolean Arithmetic}
+In computer programming, and especially in lower level languages like C or 
+assembly as we'll be looking at in this paper, numbers are represented
+not in decimal but binary with a limited number of bits allocated to the 
+variable. That means each number is represented in memory as a bit-vector of
+the form $\{0,1\}^n$, where $n$ is the ``word size'', that is, the maximum 
+size of a given number. Using these bit-vector numbers, we can use different
+operations based on how we treat them, I.E. using bitwise operators such as
+$\ll$ and $\gg$ for shifting bits right and left, $\land$ and $\lor$, $\neg$, 
+and $\oplus$, or using traditional arithmetic operators $+, -, \times,$ etc.
+When using bitwise operators, it is certainly more clear to treat the 
+number as a bit-vector, while when using traditional arithmetic operators
+we get the same result by taking the result of normal arithmetic over the ring 
+($\Z/2^n\Z$) (since we can't increase the word size, any time the result we
+get is larger than can be represented in $\{0,1\}^n$, the upper bits are truncated).
+\par Now, to formally define an expression of this type (will fill in ?'s in final draft):
+\thm{Definition ?} {Let $n,s,t \in \N$, $x_i$ be a variable over $\{0,1\}^n$ for
+$i = 1,...,t$, and $e_j : (\{0,1\}^n)^t \rightarrow \{0,1\}^n$ be a bitwise expression for
+$j = 1,...,s$. Let $a_j\in \{0,1\}^n$ be a coefficient for $j = 1,...,s$.
+Then, a linear MBA expression $e$ is an expression that can be written as follows:
+\begin{align*}
+    e(x_1, ..., x_t) = \sum_{j=1}^s a_j e_j(x_1,...,x_t)
+\end{align*}
+}
+\par Since we've now defined the the essential operators we have in mixed-boolean arithmetic
+expressions, we can imagine several situations where a programmer might use expressions 
+that they would rather keep secret. In cryptography-relevant code, we may use any
+number of cryptographic methods and wish to keep the exact operations hidden 
+for as long as possible to dissuade attackers. Similarly, there may be important
+constant values in a programmer's code that they wish to hide for similar reasons.
+In order to do so, we'll need to generate equivalent but more complex mixed-boolean
+arithmetic expressions.
+\subsection{Mixed Boolean Arithmetic in Linear Algebra}
+Now, there are two ways to re-write an MBA expression as something more complex, 
+re-writing and inserting identities. Inserting identities means to tag onto
+the expression some MBA expression that is always 0, and re-writing means to 
+replace an expression with one that is equivalent. First, let's look at methods
+of generating and proving identities. There is one critically important theorem 
+that will allow us to generate arbitrary MBA identities:
+\thm{Theorem ?}{Let e be a linear MBA expression with the same variable definitions
+as in Definition ?. Then let $(v_{0,j},...,v_{2^t-1, j})$ be the column vector
+of the truth table of the Boolean expression from $e_j$, and let 
+$A = (v_{i,j})_{2^t \times s}$ be the $\{0,1\}$ matrix of truth tables over ($\Z/2^n\Z$).
+Let $Y_{s \times 1} = (y_0, \dots, y_{s-1})^T$ be a vector of $s$ variables over
+$(\Z/2^n\Z)$. Then $e = 0$ if and only if $AY = 0$ has a solution over $(\Z/2^n\Z)$.}
+\pf{INSERT PROOF IN FINAL DRAFT}
+What this theorem essentially allows us to do is build any matrix $A$
+composed of column vectors that are truth table values, then solve the 
+equation $Ax = 0$ for some vector $x$, and we'll have an identity MBA expression.
+For example, consider the matrix:
+\begin{align*}
+    F = \begin{bmatrix}
+        0 & 0 & 0 & 1 & 1\\
+        0 & 1 & 1 & 0 & 1\\
+        1 & 0 & 1 & 1 & 1\\
+        1 & 1 & 0 & 1 & 1\\
+    \end{bmatrix}
+\end{align*}
+{\color{blue} NOTE: here we will have to include a brief explanation of truth tables and two's 
+complement.\\}
+This matrix is composed of truth table values for the following functions (where 
+$f_i$ represents the function in the $i$'th column) :
+\begin{align*}
+    f_0(x,y) &= x\\
+    f_1(x,y) &= y\\
+    f_2(x,y) &= x \oplus y\\
+    f_3(x,y) &= x \lor (\neg y)\\
+    f_4(x,y) &= -1
+\end{align*}
+(Where we've defined -1 to be all 1's as in two's complement representation).
+Then, solving for $Ax = 0$, we get:
+\begin{align*}
+    x = \begin{bmatrix}
+    1\\-1\\-1\\-2\\2
+    \end{bmatrix}
+\end{align*}
+So, plugging in our expressions from the functions the matrix was composed of, 
+we get the following equation:
+\begin{align*}
+    x - y - (x \oplus y) -2(x \lor (\neg y)) + 2 =0
+\end{align*}
+{\color{blue} TODO: Prove that this holds for arbitrarily sized bit-vectors, show other 
+examples, }
+\subsection{Obfuscating Mixed Boolean Arithmetic}
+Now, using the method in the previous section to generate MBA inequalities works well,
+but we can also use it to find MBA equalities that allow us to rewrite our original
+expression. Take the first example:
+\begin{align*} 
+    x - y - (x \oplus y) -2(x \lor (\neg y)) + 2 = 0\\
+    \implies x - y = (x \oplus y) + 2(x \lor (\neg y)) - 2
+\end{align*}
+Then, in any MBA expression that contains $(x - y)$, we can replace it with
+the expression on the right. Since we can generate arbitrary MBA identities, 
+we can compose any matrix that includes some of the operations in whichever
+MBA expression we'd like to obfuscate, and then use the resulting equality
+to replace expressions with equivalent ones as long as we'd like to! 
+\par Now, this seems great as we can apparently introduce arbitrary arithmetic
+complexity into whichever expressions we use. But, there are some other 
+considerations here: first and foremost, introducing more complexity harms
+performance, and if the code that we're obfuscating is performance-critical, 
+this is an important trade-off to consider. Secondly, MBA obfuscation 
+isn't perfect, and there are a few ways to combat it.\\
+{\color{blue} TODO: Combatting MBA obfuscation? (too much material?)}
