@@ -23,14 +23,25 @@ Then, a linear MBA expression $e$ is an expression that can be written as follow
     e(x_1, ..., x_t) = \sum_{j=1}^s a_j e_j(x_1,...,x_t)
 \end{align*}
 }
-\par Since we've now defined the the essential operators we have in mixed-boolean arithmetic
+\par Since we've now defined the the essential operators we have in mixed-boolean 
+arithmetic
 expressions, we can imagine several situations where a programmer might use expressions 
 that they would rather keep secret. In cryptography-relevant code, we may use any
-number of cryptographic methods and wish to keep the exact operations hidden 
-for as long as possible to dissuade attackers. Similarly, there may be important
-constant values in a programmer's code that they wish to hide for similar reasons.
-In order to do so, we'll need to generate equivalent but more complex mixed-boolean
-arithmetic expressions.
+number of cryptographic methods that are composed of MBA (mixed boolean arithmetic)
+expressions
+and wish to keep the exact constituent operations hidden 
+to dissuade attackers. 
+\\
+\begin{align*}
+    \begin{tabular}{c|c|c"yamomma"c}
+        $x & $y$ & $x \oplus y$ \\
+        \hline
+        0 & 0 & 0 \\
+        1 & 0 & 1 \\
+        0 & 1 & 1 \\
+        1 & 1 & 0 \\
+    \end{tabular}
+\end{align*}
 \subsection{Mixed Boolean Arithmetic in Linear Algebra}
 Now, there are two ways to re-write an MBA expression as something more complex, 
 re-writing and inserting identities. Inserting identities means to tag onto
