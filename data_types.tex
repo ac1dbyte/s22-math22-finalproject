@@ -158,10 +158,41 @@ write \textit{A.item(0, 0)}, we want the element in the first row and first
 column
 of
 $ A $. \textit{A.item(0, 1)} is thus the element in the first row and second
-column.
+column. In the spirit of our plus function, we also define a \textbf{times}
+function:
+\begin{equation*}
+   times\left(
+   \begin{bmatrix}
+       x & a \\
+       0 & 1
+   \end{bmatrix},
+   \begin{bmatrix}
+       y & b \\
+       0 & 1
+   \end{bmatrix}
+   \right)
+   =
+   \begin{bmatrix}
+       1 & a  \cdot b \\
+       0     & x \cdot y
+   \end{bmatrix}
+\end{equation*}
+The equivalent Python code:
+\begin{verbatim}
+    def times(A: np.array, B: np.array) -> np.array:
+        x_12: int = A.item(0, 1) * B.item(0, 1)
+        x_22: int = A.item(1, 1) * B.item(1, 1)
+        return array([[1, x_12],
+                      [0, x_22]])
+\end{verbatim}
+Notice that the matrix output of this function has a slightly different
+configuration than that of the plus function. The elements have shifted places.
+The key takeaway here is that you can define these functions in any way you
+want as long as when you take the determinant, you get the correct output:
+$ x \cdot y $.
 
-We can define many more operations beyond addition such as
-multiplication, division, subtraction, exponentiation, etc. It is important for
+We can define many more operations beyond addition and multiplication such as
+division, subtraction, negation, exponentiation, etc. It is important for
 these operations to be defined for our matrices to make our obfuscated code
 harder to reverse engineer. It would not be much use to simply represent
 numbers as
