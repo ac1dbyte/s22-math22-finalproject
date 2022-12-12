@@ -173,26 +173,93 @@ function:
    \right)
    =
    \begin{bmatrix}
-       1 & a  \cdot b \\
-       0     & x \cdot y
+       x \cdot y & a  \cdot b \\
+       0     & 1
    \end{bmatrix}
 \end{equation*}
 The equivalent Python code:
 \begin{verbatim}
     def times(A: np.array, B: np.array) -> np.array:
+        x_11: int = A.item(0, 0) * B.item(0, 0)
         x_12: int = A.item(0, 1) * B.item(0, 1)
-        x_22: int = A.item(1, 1) * B.item(1, 1)
-        return array([[1, x_12],
-                      [0, x_22]])
+        return array([[x_11, x_12],
+                      [   0,    1]])
 \end{verbatim}
-Notice that the matrix output of this function has a slightly different
-configuration than that of the plus function. The elements have shifted places.
-The key takeaway here is that you can define these functions in any way you
-want as long as when you take the determinant, you get the correct output:
-$ x \cdot y $.
+Now since our main purpose is the exploration of different obfuscation
+techniques, recall this equation from section 2:
+\begin{align*}
+    F(x, y, z) = 22(x - y + \neg z)
+\end{align*}
+We obfuscated this function using mixed boolean arithmetic, but we can also use
+the operations and functions we have defined so far in this section. One more
+function is required though, which is the unary negation function ($ \neg $).
+Let us first define it:
+\begin{equation*}
+    unegate\left(
+    \begin{bmatrix}
+        x & a \\
+        0 & 1
+    \end{bmatrix}
+    \right)
+    =
+    \begin{bmatrix}
+        -x + 1 & -a + 1  \\
+        0      & 1
+    \end{bmatrix}
+\end{equation*}
+Now, using our conversion, times, plus, and unegate functions, we get the
+following matrices:
+\begin{align*}
+    \neg z &=
+    \begin{bmatrix}
+        -z + 1 & 2 \\
+        0      & 1
+    \end{bmatrix}
+    &x &=
+    \begin{bmatrix}
+        x  &  3 \\
+        0  &  1
+    \end{bmatrix} \\
+    -y & =
+    \begin{bmatrix}
+        -y & 5\\
+        0  & 1
+    \end{bmatrix} &
+    x + (-y) &=
+    \begin{bmatrix}
+        x - y & 8 \\
+        0      & 1
+    \end{bmatrix} \\
+     (x + (- y)) + (\neg z) &=
+     \begin{bmatrix}
+         x - y -z + 1 & 10 \\
+         0            & 1
+     \end{bmatrix} &
+     22 &=
+     \begin{bmatrix}
+         22 & 20 \\
+         0  & 1
+     \end{bmatrix} \\
+     22((x + (- y)) + (\neg z)) &=
+     \begin{bmatrix}
+         22 \cdot (x - y -z + 1) & 200 \\
+         0 & 1
+     \end{bmatrix}
+\end{align*}
+Finally, bringing all of these expression together, we get a function $ G $,
+which is the obfuscated version of our function $ F $:
+\begin{equation*}
+    G(x, y, z) =
+    \begin{bmatrix}
+        22 \cdot (x - y -z + 1) & 200 \\
+        0 & 1
+    \end{bmatrix}
+\end{equation*}
+Applying the abstraction function on this matrix should return a number that is
+the same result as applying $ F $ to the inputs $ x, y, z $.
 
 We can define many more operations beyond addition and multiplication such as
-division, subtraction, negation, exponentiation, etc. It is important for
+division, exponentiation, etc. It is important for
 these operations to be defined for our matrices to make our obfuscated code
 harder to reverse engineer. It would not be much use to simply represent
 numbers as
@@ -204,15 +271,15 @@ multiplication, etc., are defined. The programmer has complete control over
 these definitions as long as they can prove that they will yield the desired
 output wherever they are used.
 
-It is therefore worth noting that the example above, although not to be taken
+It is important to acknowledge that the example above, although not to be taken
 lightly, is too simple an
 obfuscation to be used in the real world. It does, however, give a very good
 sense of how
 obfuscation works. A better example, as proposed by Drape et al., would be to
-have $ n $ be an eigenvector of a $ 2 \times 2 $ matrix. We would then fix the
-second eigenvalue and define a more robust conversion function that is harder
-to decipher. If we wish to make our obfuscation even stronger, we can make our
-matrix bigger for example.
+have a conversion function where $ x $ is an eigenvector of a $ 2 \times 2 $
+matrix. We would then fix the
+second eigenvalue. If we wish to make our obfuscation even stronger, we can
+make our matrix bigger for example.
 
 
 
