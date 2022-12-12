@@ -4,7 +4,12 @@ obfuscation in real world programs. Furthermore, we presented two primary
 methods of obfuscation: mixed boolean arithmetic and data type obfuscation
 using matrices.
 
-Using mixed boolean arithmetic, we can
+Using mixed boolean arithmetic, we can take some important expressions in our code
+which operate on numbers that are represented by binary, and generate new expressions
+that produce the same results while being much more opaque to potential reverse 
+engineers. We also showed that you can do this first in the 1-bit space, and then
+that the same identities hold in the $n$-bit space, so we can generate these
+obfuscating expressions very efficiently.
 
 As for data types, we saw that we can obfuscate them using matrices by defining
 a conversion and abstraction function to switch between the actual type and its
@@ -22,6 +27,6 @@ obfuscations. Adding two numbers is very quick, but adding two matrices
 depending on the way we defined that operation could be relatively slower.
 Obfuscation is an art and one has to strike a balance between making code
 harder to read and making code performant enough to be competitive with other
-software. As with everything in computer science, it is all about tradeoffs.
-What it comes down to are high level discussions between programmers and
-executives as to what is important and what is not.
+software. Utilizing obfuscation requires substantial thought about the potential
+adversaries a programmer is working against and a cost-benefit analysis regarding
+factors like time spent obfuscating and the performance cost of doing so.
