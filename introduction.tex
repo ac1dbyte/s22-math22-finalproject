@@ -11,10 +11,15 @@ cannot understand or reproduce its innerworkings.
 Similarly, if code is easy to understand and contains any vulnerabilities,
 those vulnerabilities will be easier to spot and exploit by unknown, possibly
 malicious actors. Even for relatively secure code, understandability can reveal
-too much of its innerworkings to the public and result in an attack.
-\par So, programmers want to write code that is understandable to the people
-they work with to enable collaboration, but they want to release software that is not
-able to be reverse engineered. How can we synthesize
+too much of its innerworkings to the public and result in an attack. On the 
+other side of legality, those writing malicious code want their code to be 
+as opaque as possible so that the professionals working against them are not
+able to mitigate the impact of their code or even detect its malicious intent
+as effectively.
+\par So, many kinds of programmers want to write code that is understandable
+while they write it, but for several different reasons may want to release or
+use a version of that code that is obfuscated so that it is not
+able to be reverse engineered as easily. How can we reconcile
 these conflicting goals? The primary method is {\itshape software obfuscation}.
 Obfuscation is a process performed on code that transforms it into other code
 which performs essentially the same operations, but is much more difficult to
@@ -26,8 +31,9 @@ look to linear algebra.
 
 In this paper, we discuss two techniques of code obfuscation. We first
 introduce bitwise operators and mixed boolean arithmetic to obfuscate
-expressions. We then discuss introduce data types and explain how they and
+expressions. We then introduce data types and explain how they and
 their operations can be represented as matrices. In both sections, we provide a
 simple function that we attempt to obfuscate using the aforementioned
 techniques in order to contrast them. We also provide throughout the paper
-Python code samples that are equivalent to our mathematical functions.
+Python code samples that are equivalent to our mathematical functions, in order
+to show how actual code might be obfuscated using these methods.
