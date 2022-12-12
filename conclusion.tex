@@ -1,0 +1,27 @@
+\section{Conclusion}
+In this paper, we have discussed the importance of and need for code
+obfuscation in real world programs. Furthermore, we presented two primary
+methods of obfuscation: mixed boolean arithmetic and data type obfuscation
+using matrices.
+
+Using mixed boolean arithmetic, we can
+
+As for data types, we saw that we can obfuscate them using matrices by defining
+a conversion and abstraction function to switch between the actual type and its
+matrix representation. Furthermore, we defined basic arithmetic operations like
+addition and multiplication for these matrices that correspond to the
+operations done on the original values. While we primarily discussed
+obfuscating rational numbers, it is not impossible that with a little bit of
+creativity, we can do the same for boolean and string data types.
+
+There are several other techniques for obfuscation that are relatively simpler
+such as renaming our variables, inserting irrelevant code, and adding redundant
+operands among others as discussed by Collberg et al. It is important, however,
+that the programmer consider the computational \textit{cost} of these
+obfuscations. Adding two numbers is very quick, but adding two matrices
+depending on the way we defined that operation could be relatively slower.
+Obfuscation is an art and one has to strike a balance between making code
+harder to read and making code performant enough to be competitive with other
+software. As with everything in computer science, it is all about tradeoffs.
+What it comes down to are high level discussions between programmers and
+executives as to what is important and what is not.
