@@ -7,14 +7,16 @@ the form $\{0,1\}^n$, or $\B^n$ where $\B$ is for binary, and where $n$ is the `
 size of a given number. To compute the decimal value of a given bit vector $v \in \B^n$, 
 take the following sum with $v_i$ representing the $i$th bit of $v$:
 \begin{align*}
-    v = \sum_{i = 0}^{n-1} v_i \cdot 2^{n-i-1}
+    v = \sum_{i = 0}^{n-1} v_i \cdot 2^{i}
 \end{align*}
 For our purposes, that means the most significant (largest value) bit is the topmost
-or first element of $v$. This means that, for example, the number $2$ in $\B^4$ would be represented as 
+or first element of $v$ (and we say that $v_0$ is the bottom-most element. Note that
+this is different from how vectors would normally be indexed in linear algebra).
+This means that, for example, the number $2$ in $\B^4$ would be represented as 
 \begin{align*}
     v = \begin{bmatrix}
         0 \\ 0 \\1 \\0
-    \end{bmatrix} = \sum_{i=0}^{3}v_i \cdot 2^{4-i-1} = 2^3 \cdot 0 + 2^2 \cdot 0 + 2^1 \cdot 1 + 2^0 \cdot 0 = 2
+    \end{bmatrix} = \sum_{i=0}^{3}v_i \cdot 2^{i} = 2^0 \cdot 0 + 2^1 \cdot 1 + 2^2 \cdot 0 + 2^3 \cdot 0 = 2
 \end{align*}
 This is just a way of interpreting the bit vector. In other words, we could also say that 
 if the word size is 4, then $2 = 0010$ in binary. All of these expressions are
@@ -74,7 +76,8 @@ expression including some of the operators we've defined above.
         = 5
     \end{align*}
 }
-Consider also doing normal arithmetic operations on bit vectors:
+Note that there are other bitwise operators such as left and right shift, but for our
+purposes we will only use the four in this definition. Consider also doing normal arithmetic operations on bit vectors:
 \begin{align*}
 x + y &= \begin{bmatrix}
 0 & 0 & 0 & 1 
@@ -91,10 +94,10 @@ $s$ is the number of bitwise expressions, and $t$ is the number of
 inputs to the expressions.
 Let $x_i$ be a variable over $\B^n$ for
 $i = 1,...,t$, and $e_j : (\B^n)^t \rightarrow \B^n$ be a bitwise expression for
-$j = 1,...,s$. Let $a_j\in \B^n$ be constant coefficients for $j = 1,...,s$.
+$j = 0,...,s-1$. Let $a_j\in \B^n$ be constant coefficients.
 Then, a linear MBA (mixed boolean arithmetic) expression $e$ is an expression that can be written as follows:
 \begin{align*}
-    e(x_1, ..., x_t) = \sum_{j=1}^s a_j e_j(x_1,...,x_t)
+    e(x_1, ..., x_t) = \sum_{j=0}^{s-1} a_j e_j(x_1,...,x_t)
 \end{align*}
 }
 \par Since we've now defined the the essential operators we have in mixed-boolean 
@@ -135,68 +138,140 @@ as in Definition 2. Then let $(v_{0,j},...,v_{2^t-1, j})^T$ be the column vector
 of the truth table of the Boolean expression from $e_j$, and let 
 $A = (v_{i,j})_{2^t \times s}$ be the $\B$-matrix of those truth tables over ($\Z/2^n\Z$).
 Let $Y_{s \times 1} = (y_0, \dots, y_{s-1})^T$ be a vector of $s$ variables over
-$(\Z/2^n\Z)$. Then $e = 0$ if and only if $AY = 0$ has a solution over $(\Z/2^n\Z)$.}
+$(\Z/2^n\Z)$. Then $e = 0$ if and only if $AY = 0$ has a solution with $Y = (a_0, ..., a_s-1)^T$.}
 \pf{
-    First, we prove that $e = 0 \implies AY = 0$ has a solution over $(\Z/2^n\Z)$.
-    Consider some MBA $e : e = 0$. Then $Y = (a_0, a_1, \dots, a_j)^T$ is 
-    clearly a solution to $AY = 0$, since we know that $e = 0$ and thus
-    taking the constants from $e$ and multiplying them by the truth tables of 
-    the constituent expressions of $e$ will be zero.
-    \par Then, we need to prove that $AY = 0 \implies e = 0$. Consider some 
-    solution $Y = (y_0, ..., y_j)^T : AY = 0$. Let $y_{i,j}$ be the $i$th bit
-    of $y_j$. Then, by Zhou {\itshape et al}'s ``Information hiding in software
-    with mixed boolean-arithmetic transforms,'' we have the following:
+    Then, we need to prove that $AY = 0$ with $Y = (a_0, ..., a_{s-1})^T \implies e = 0$. 
+    Let $A Y = 0$ with $Y = (a_0, ..., a_{s-1})^T$. Let $f_j(x_{1,i}, ..., x_{t, i})$
+    represent the bitwise expression for $e_j$ on the $i$th bits of $(x_1, ..., x_t)$, 
+    such that $e_j(x_1, ..., x_t) = \begin{bmatrix}
+        f_j(x_{1,0}, ..., x_{t, 0})\\
+        \vdots \\
+        f_j(x_{1,n-1}, ..., x_{t, n-1})
+    \end{bmatrix}$
+    Now, we can write
+    $e$ as:
     \begin{align*}
-        e = \sum_{j=0}^{s-1}
+        \sum_{j=0}^{s-1}a_j \cdot e_j(x_1, ..., x_t) &= \sum_{j=0}^{s-1} a_j \cdot \begin{bmatrix}
+        f_j(x_{1,0}, ..., x_{t, 0})\\
+        \vdots \\
+        f_j(x_{1,n-1}, ..., x_{t, n-1})
+        \end{bmatrix}\\
+                                                     &= \sum_{j=0}^{s-1} a_j \sum_{i=0}^{n-1} f_j(x_{1,i}, ..., x_{t, i}) \cdot 2^{i}\\
+                                                     &= \sum_{i=0}^{n-1} 2^i (\sum_{j=0}^{s-1} a_j \cdot f_j(x_{1,i}, ..., x_{t, i}) )
     \end{align*}
+    Then, we know that since $AY = 0$, then
+    \begin{align*}
+        \sum_{j=0}^{s-1} a_j \cdot f_j(x_{1,i}, ..., x_{t, i}) = 0
+    \end{align*}
+    for all $i$, since $A$ represents the truth values of all of $f_j$, and thus 
+    \begin{align*}
+        \sum_{j=0}^{s-1} a_j \sum_{i=0}^{n-1} f_j(x_{1,i}, ..., x_{t, i}) \cdot 2^{i} = 0
+    \end{align*}
+    and therefore $e = 0$.
 }
-
-\par What this theorem essentially allows us to do is build any matrix $A$
-composed of column vectors that are truth table values, then solve the 
-equation $Ax = 0$ for some vector $x$, and we'll have an identity MBA expression.
-\par For example, consider that we wanted to compose an MBA identitity consisting 
+\par A lot of difficult notation and background goes into that proof, but 
+to highlight the important part, what this theorem says is that constructing
+a matrix of truth tables $A$ from some functions $f_j$ on some bit vectors $(x_1, ..., x_t)$, 
+and then solving $AY = 0$ for $Y$ allows us to construct an MBA identity.
+\par Let's take an example, consider that we wanted to compose an MBA identitity consisting 
 of the following expressions:
 \begin{align*}
     f_0(x,y) &= x\\
     f_1(x,y) &= y\\
-    f_2(x,y) &= x \oplus y\\
-    f_3(x,y) &= x \lor (\neg y)\\
-    f_4(x,y) &= -1
+    f_2(x,y) &= x \land \neg y\\
+    f_3(x,y) &= x \oplus y\\
+    f_4(x,y) &= \neg x\\
+    f_5(x,y) &= -1
 \end{align*}
 Then, we take the truth tables for each of these expressions and form them
 into a column vector, then compose them into a matrix. In this case, we get 
 the following:
 \begin{align*}
-    F = \begin{bmatrix}
-        0 & 0 & 0 & 1 & 1\\
-        0 & 1 & 1 & 0 & 1\\
-        1 & 0 & 1 & 1 & 1\\
-        1 & 1 & 0 & 1 & 1\\
+    A =
+    \begin{bmatrix}
+        0 & 0 & 0 & 0 & 1 & 1\\
+        0 & 1 & 0 & 1 & 1 & 1\\
+        1 & 0 & 1 & 1 & 0 & 1\\
+        1 & 1 & 0 & 0 & 0 & 1\\
     \end{bmatrix}
 \end{align*}
 This matrix is composed of truth table values for the following functions (where 
-$f_i$ represents the function in the $i$'th column) :
+$f_i$ represents the function in the $i$th column) :
 (Where we've defined -1 to be all 1's as in two's complement representation).
-Then, solving for $Ax = 0$, we get:
+Then, solving for $Ax = 0$, we can take some solution:
 \begin{align*}
     x = \begin{bmatrix}
-    1\\-1\\-1\\-2\\2
+    -1\\-1\\-2\\1\\-2\\2
     \end{bmatrix}
 \end{align*}
 So, plugging in our expressions from the functions the matrix was composed of, 
 we get the following equation:
 \begin{align*}
-    x - y - (x \oplus y) -2(x \lor (\neg y)) + 2 =0
+    - x - y - 2(x \land \neg y) + (x \oplus y) - 2(\neg x) - 2 = 0
 \end{align*}
-
-\noindent
+So, we generated an MBA identity by just inputting some expressions we would like to 
+have seen in the final result. Great! Now, we did this by composing $A$ under the 
+assumption that all of our variables were 1-bit large. If we were working in the $n$-bit
+space, $A$ would become much larger. But, there's another useful theorem here, which
+we will describe the mathematical justification for, but not prove.
+\thm{Theorem 2}{Let $e : (\B^1)^t \rightarrow \B^1$ be an MBA expression such that
+    $e = 0$. Then, for any word-size $n$, $e = 0$.
+}
+To briefly look at why this is the case, consider the following in $\B^n$:
+\begin{align*}
+    e = \sum_{j=0}^{s-1}a_j \cdot e_j(x_1, ..., x_t) &= \sum_{j=0}^{s-1} a_j \cdot \begin{bmatrix}
+    f_j(x_{1, 0}, ..., x_{t, 0})
+    \end{bmatrix}\\
+\end{align*}
+Then, we know that for all $(x_{1,0}, ..., x_{t,0}) \in (\B^n)^t$, by our assumption $e = 0$, 
+then $f(x_{1,0}, ..., x_{t, 0}) = 0$. Then, extending this to the $n$-bit space:
+\begin{align*}
+    e = \sum_{j=0}^{s-1}a_j \cdot e_j(x_1, ..., x_t) &= \sum_{j=0}^{s-1} a_j \cdot \begin{bmatrix}
+    f_j(x_{1,0}, ..., x_{t, 0})\\
+    \vdots \\
+    f_j(x_{1,n-1}, ..., x_{t, n-1})
+    \end{bmatrix}\\
+\end{align*}
+Then:
+\begin{align*}
+    e =  \sum_{j=0}^{s-1} a_j \sum_{i=0}^{n-1} f_j(x_{1,i}, ..., x_{t, i}) \cdot 2^{i}
+\end{align*}
+By above, we know that $f_j = 0$ when operating on singular bits, which is exactly what
+we do here, so:
+\begin{align*}
+    &= \sum_{j=0}^{s-1} a_j \sum_{i=0}^{n-1} 0 \cdot 2^{i} = 0
+\end{align*}
+Therefore, an MBA identity that holds in the 1-bit space holds in the $n$-bit space, 
+and we can use the results from these identities with any word size! This is 
+great for obfuscating our previous function $F$, which works with 32-bit numbers.
+\subsection{Obfuscating Mixed Boolean Arithmetic}
+Now, using the method in the previous section to generate MBA identities works well,
+but we can also use it to find MBA equalities that allow us to rewrite our original
+expression. Take the first example:
+\begin{align*} 
+    &  - x - y - 2(x \land \neg y) + (x \oplus y) - 2(\neg x) - 2 = 0\\
+    &\implies - x - y = 2(x \land \neg y) - (x \oplus y) + 2(\neg x) + 2\\
+    &\implies x - y = 2(x \land \neg y) - (x \oplus y) + 2(\neg x) + 2 + 2x
+\end{align*}
+Then, in any MBA expression that contains $(x - y)$, we can replace it with
+the expression on the right. Since we can generate arbitrary MBA identities, 
+we can compose any matrix that includes some of the operations in whichever
+MBA expression we'd like to obfuscate, and then use the resulting equality
+to replace expressions with equivalent ones as long as we'd like to! For example, let's
+apply this MBA identity to our function $F$ by rewriting the $x-y$ term and calling
+the obfuscated function $G$, and look at
+the result in python:
+\\
 \begin{minipage}{.5\textwidth}
     \begin{small}
     \begin{framed}
         \begin{verbatim}
 def F(x: int, y: int,
       z: int) -> int:
-    return (x - y + ~z)
+    return 22*(x - y + ~z)
+
+
+
         \end{verbatim}
     \end{framed}
     \end{small}
@@ -207,23 +282,17 @@ def F(x: int, y: int,
         \begin{verbatim}
 def G(x: int, y: int,
       z: int) -> int:
-    return (x - y + ~z)
+    return 22*(2*(x & ~y) 
+            - (x ^ y) 
+            + 2*(~x) + 2
+            + 2*x + ~z)
         \end{verbatim}
         \end{small}
     \end{framed}
 \end{minipage}
-{\color{blue} TODO: Prove that this holds for arbitrarily sized bit-vectors, show other 
-examples, }
-\subsection{Obfuscating Mixed Boolean Arithmetic}
-Now, using the method in the previous section to generate MBA identities works well,
-but we can also use it to find MBA equalities that allow us to rewrite our original
-expression. Take the first example:
-\begin{align*} 
-    x - y - (x \oplus y) -2(x \lor (\neg y)) + 2 = 0\\
-    \implies x - y = (x \oplus y) + 2(x \lor (\neg y)) - 2
-\end{align*}
-Then, in any MBA expression that contains $(x - y)$, we can replace it with
-the expression on the right. Since we can generate arbitrary MBA identities, 
-we can compose any matrix that includes some of the operations in whichever
-MBA expression we'd like to obfuscate, and then use the resulting equality
-to replace expressions with equivalent ones as long as we'd like to! 
+The expression on the right is much more difficult to understand to someone 
+reading the code after it's published or sold, and we could even repeat the process
+several times to obfuscate with the $z$ term and make the expression look as complex 
+as we want. To ensure that our results are correct, we tested that the results of 
+these expressions are equivalent for several thousand random values and found that
+it succeeded each test.
