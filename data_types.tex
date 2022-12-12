@@ -1,5 +1,8 @@
 \section{Data Types}
 \subsection{Introduction to Data Types}
+So, we've seen a way to rewrite expressions while using the same kinds of data, 
+i.e. bit vectors, but another method of obfuscation is to exchange some type 
+of data for another one entirely.g
 A data type is a construct in programming that defines what kind of data a
 variable can hold and the operations that a programmer can do with this type.
 For those who are familiar with programming, integers, floating point numbers,
@@ -56,7 +59,7 @@ patterns that could help someone reverse engineer an application.
 Our second function is called the conversion function denoted by $ cf: E \to D
 $ and is defined as follows:
 \begin{equation*}
-    cf (n) = A
+    cf (x) = A
 \end{equation*}
 Our conversion function will take $ x $, what we want to obfuscate, as an input
 and output the obfuscation $ A $. This function is the inverse of $ af $.
@@ -279,7 +282,8 @@ sense of how
 obfuscation works. A better example, as proposed by Drape et al., would be to
 have a conversion function where $ x $ is an eigenvalue of a $ 2 \times 2 $
 matrix and the second eigenvalue is fixed. If we wish to make our obfuscation
-even stronger, we can make our matrix bigger for example.
-
-
+even stronger, we can make our matrix bigger for example. In this case, we might
+also use fake control flow that uses the value that was randomly generated in a 
+way that appears to be purposeful but actually isn't, so that it is harder to see
+that this part of the matrix is never relevant.
 

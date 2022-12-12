@@ -29,7 +29,7 @@ $\ll$ and $\gg$ for shifting bits right and left, $\land$ and $\lor$ (bitwise AN
 and $\oplus$ (bitwise XOR), or using traditional arithmetic operators $+, -, \times,$ etc.
 \par When using bitwise operators, it is certainly more clear to treat the
 number as a bit-vector, while when using traditional arithmetic operators
-we get the same result by taking the result of normal arithmetic over the modular ring
+we get the same result by performing the arithmetic expression over the modular ring
 ($\Z/2^n\Z$). This is because when doing arithmetic on bit-vectors of a set size,
 any time the result we get is larger than can be represented in $n$ bits, the result
 is taken modulo $2^n$. For the purposes of our paper, we will intermingle using the
@@ -89,8 +89,8 @@ x + y &= \begin{bmatrix}
 the 5th position from the right, but it gets truncated as we're working in $\B^4$, resulting
 in $x + y$ being smaller then $x$ or $y$.
 This is why we get the same result as taking the addition in
-$\Z/(2^n\Z)$ (Over this ring, we would get $7 + 10 = 17$ and take the result mod $2^4$, 
-since $n=4$).
+$\Z/(2^n\Z)$. Over this ring, we would get $7 + 10 = 17$ and take the result mod $2^4$, 
+since $n=4$.
 \par Now, to formally define a mixed boolean arithmetic expression:
 \thm{Definition 2} {Let $n,s,t \in \N$, where $n$ is the number of bits in a bit vector,
 $s$ is the number of bitwise expressions, and $t$ is the number of
@@ -124,7 +124,7 @@ and a number is negative if and only if its first bit is set to 1.
 This allows us to represent negative numbers using only 0's and 1's in a bit vector.
 Also note here that the results of a bitwise operator do {\itshape not change}
 using 2's complement, only the  interpretation of the result. The same goes for
-arithmetic operators the underlying bit vector representation.)
+arithmetic operators considering the underlying bit vector representation.)
 By the definition we've given above, we know that $F$ is an MBA expression.
 In the next section,
 we will use some tools from linear algebra to obfuscate $F$.
@@ -199,14 +199,14 @@ In this case, we get the following:
     \end{bmatrix}
 \end{align*}
 (Where we've defined -1 to be all 1's as in 2's complement representation)
-Then, solving for $Ax = 0$, we can take some solution:
+Then, solving for $Ax = 0$, we can take some solution
 \begin{align*}
     x = \begin{bmatrix}
     -1\\-1\\-2\\1\\-2\\2
     \end{bmatrix}
 \end{align*}
-So, plugging in our expressions from the functions the matrix was composed of,
-we get the following equation:
+and then plug in our expressions from the functions the matrix was composed of,
+and we get the following equation:
 \begin{align*}
     - x - y - 2(x \land \neg y) + (x \oplus y) - 2(\neg x) - 2 = 0
 \end{align*}
@@ -249,9 +249,9 @@ Therefore, an MBA identity that holds in the 1-bit space holds in the $n$-bit sp
 and we can use the results from these identities with any word size! This is
 great for obfuscating our previous function $F$, which works with 32-bit numbers.
 \subsection{Obfuscating Mixed Boolean Arithmetic}
-Now, using the method in the previous section to generate MBA identities works well,
-but we can also use it to find MBA equalities that allow us to rewrite our original
-expression. Take the first example:
+So, we have an identity expression from the first section, and we'd like to use it
+to provide an equality that allows us to rewrite our function $F$.
+From that section we have:
 \begin{align*}
     &  - x - y - 2(x \land \neg y) + (x \oplus y) - 2(\neg x) - 2 = 0\\
     &\implies - x - y = 2(x \land \neg y) - (x \oplus y) + 2(\neg x) + 2\\
@@ -260,10 +260,10 @@ expression. Take the first example:
 Then, in any MBA expression that contains $(x - y)$, we can replace it with
 the expression on the right. Since we can generate arbitrary MBA identities,
 we can compose any matrix that includes some of the operations in whichever
-MBA expression we'd like to obfuscate, and then use the resulting equality
-to replace expressions with equivalent ones as long as we'd like to! For example, let's
+MBA expression we'd like to obfuscate. Then, we use the resulting equality
+to replace expressions with equivalent ones as much as we'd like to. For example, let's
 apply this MBA identity to our function $F$ by rewriting the $x-y$ term and calling
-the obfuscated function $G$, and look at
+the obfuscated function $G$, and then look at
 the result in Python:
 \\
 \begin{minipage}{.5\textwidth}
@@ -298,7 +298,7 @@ The expression on the right is much more difficult to understand for someone
 reading the code after it's published or sold, and we could even repeat the process
 several times to obfuscate with the $z$ term and make the expression look as complex
 as we want. To ensure that our results are correct, we tested that the results of
-these expressions are equivalent for several thousand random values and found that
+these expressions are equivalent for several thousand random values $x, y, z \in \B^{32}$ and found that
 it succeeded each test.
 \par It's worthwhile to point out that obfuscating code arbitrarily is not a great idea,
 as there are performance concerns once the expression starts getting too big, especially
