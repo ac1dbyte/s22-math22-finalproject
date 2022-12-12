@@ -64,7 +64,7 @@ and output the obfuscation $ A $. This function is the inverse of $ af $.
 Now back to the realm of matrices, we need to define our aforementioned
 functions. One example would be to have $ cf $ generate an $ A $ such that $ af
 $ simply calculates the determinant of $ A $ yielding $ x $. Thus, we may for
-example define $ cf $ as follows
+example define $ cf $ as follows:
 \begin{equation*}
     cf(x)
     =
@@ -94,7 +94,7 @@ that in this example, there are no restrictions on what $ a $ can be. In our
 Python code specifically, $ a $ will be a random number generated for us that
 is between $ 0
 $ and $ 1000 $. Now, the abstraction
-function would simply be
+function would simply be:
 \begin{equation*}
     af \left(
     \begin{bmatrix}
@@ -116,18 +116,18 @@ In Python:
         x = linalg.det(A) # Calculate the determinant
         return x          # Return the calculated value
 \end{verbatim}
-We can now test our 2 functions
+We can now test our 2 functions:
 \begin{equation*}
     af(cf(x)) = x \cdot 1- a \cdot 0 = x
 \end{equation*}
 It works! This is not enough, however, as we still need to define operations
 that correspond to basic arithmetic. Let us take addition as an
-example. We need a function \textbf{plus} such that
+example. We need a function \textbf{plus} such that:
 \begin{equation*}
     x + y \rightsquigarrow \mathbf{plus(A, B)} : x \rightsquigarrow A, y
     \rightsquigarrow B
 \end{equation*}
-\textbf{plus} can then be defined as
+\textbf{plus} can then be defined as:
 \begin{equation*}
     plus\left(
     \begin{bmatrix}
