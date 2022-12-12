@@ -8,8 +8,6 @@ size of a given number. Using these bit-vector numbers, we can use different
 operations based on how we treat them, I.E. using bitwise operators such as
 $\ll$ and $\gg$ for shifting bits right and left, $\land$ and $\lor$ (bitwise AND and OR), $\neg$ (bitwise NOT), 
 and $\oplus$ (bitwise XOR), or using traditional arithmetic operators $+, -, \times,$ etc.
-\thm{Definition 1}{
-}
 \par When using bitwise operators, it is certainly more clear to treat the 
 number as a bit-vector, while when using traditional arithmetic operators
 we get the same result by taking the result of normal arithmetic over the modular ring 
@@ -31,9 +29,12 @@ expression including some of the operators we've defined above.
     \end{tabular}
 \end{align*}
 \par Now, to formally define a mixed boolean arithmetic expression:
-\thm{Definition 1} {Let $n,s,t \in \N$, $x_i$ be a variable over $\{0,1\}^n$ for
-$i = 1,...,t$, and $e_j : (\{0,1\}^n)^t \rightarrow \{0,1\}^n$ be a bitwise expression for
-$j = 1,...,s$. Let $a_j\in \{0,1\}^n$ be a coefficient for $j = 1,...,s$.
+\thm{Definition 1} {Let $n,s,t \in \N$, where $n$ is the number of bits in a bit vector, 
+$s$ is the number of bitwise expressions, and $t$ is the number of 
+inputs to expression.
+Let $\B^n$ be the vector space $\{0,1\}^n$, $x_i$ be a variable over $\B^n$ for
+$i = 1,...,t$, and $e_j : (\B^n)^t \rightarrow \B^n$ be a bitwise expression for
+$j = 1,...,s$. Let $a_j\in \B^n$ be constant coefficients for $j = 1,...,s$.
 Then, a linear MBA (mixed boolean arithmetic) expression $e$ is an expression that can be written as follows:
 \begin{align*}
     e(x_1, ..., x_t) = \sum_{j=1}^s a_j e_j(x_1,...,x_t)
@@ -46,8 +47,21 @@ that they would rather keep secret. In cryptography-relevant code, we may use an
 number of cryptographic methods that are composed of MBA 
 expressions
 and wish to keep the exact constituent operations hidden 
-to dissuade attackers. 
-\\
+to dissuade attackers. For example, let's say we are working on a 
+program that uses the following function $F : (\B^{32})^3 \rightarrow \B^{32}$ as part
+of a top-secret cryptography algorithm:
+\begin{align*}
+    F(x, y, z) = 22(x - y + \neg z)
+\end{align*}
+This means  that $F$ takes three bit-vectors of size 32 bits, $x, y, z \in \B^{32}$, 
+and returns the bit vector equivalent to that given expression. 
+(Note that we will use 2's complement representation, which means that for some
+bit vector $v \in \B^n$, $-v = \neg v + 1$, and a number is negative if and only if
+its first bit is set to 1. This allows us to represent negative
+numbers using only 0's and 1's in a bit vector.)
+By the definition we've given above, we know that $F$ is an MBA expression. 
+In the next section, 
+we will take some tools from linear algebra and use them to obfuscate $F$.
 \subsection{Mixed Boolean Arithmetic in Linear Algebra}
 Now, there are two ways to re-write an MBA expression as something more complex, 
 re-writing and inserting identities. Inserting identities means to tag onto
@@ -55,13 +69,25 @@ the expression some MBA expression that is always 0, and re-writing means to
 replace an expression with one that is equivalent. First, let's look at methods
 of generating and proving identities. There is one critically important theorem 
 that will allow us to generate arbitrary MBA identities:
-\thm{Theorem ?}{Let e be a linear MBA expression with the same variable definitions
+\thm{Theorem 1}{Let e be a linear MBA expression with the same variable definitions
 as in Definition 1. Then let $(v_{0,j},...,v_{2^t-1, j})^T$ be the column vector
 of the truth table of the Boolean expression from $e_j$, and let 
-$A = (v_{i,j})_{2^t \times s}$ be the $\{0,1\}$ matrix of truth tables over ($\Z/2^n\Z$).
+$A = (v_{i,j})_{2^t \times s}$ be the $\B$ matrix of truth tables over ($\Z/2^n\Z$).
 Let $Y_{s \times 1} = (y_0, \dots, y_{s-1})^T$ be a vector of $s$ variables over
 $(\Z/2^n\Z)$. Then $e = 0$ if and only if $AY = 0$ has a solution over $(\Z/2^n\Z)$.}
-\pf{INSERT PROOF IN FINAL DRAFT}
+\pf{
+    First, we prove that $e = 0 \implies AY = 0$ has a solution over $(\Z/2^n\Z)$.
+    Consider some MBA $e : e = 0$. Then $Y = (a_0, a_1, \dots, a_j)^T$ is 
+    clearly a solution to $AY = 0$, since we know that $e = 0$ and thus
+    taking the constants from $e$ and multiplying them by the truth tables of 
+    the constituent expressions of $e$ will be zero.
+    \par Then, we need to prove that $AY = 0 \implies e = 0$. Consider some 
+    solution $Y = (y_0, ..., y_j)^T : AY = 0$. Let $y_{i,j}$ be the $i$th bit
+    of $y_j$. Then we have the following:
+    \begin{align*}
+        e = \sum_{j=0}^{s-1}
+    \end{align*}
+}
 
 \par What this theorem essentially allows us to do is build any matrix $A$
 composed of column vectors that are truth table values, then solve the 
