@@ -5,6 +5,7 @@
 !*.gitignore
 !*.tex
 !*.md
+!*.bib
 
 # Even if they are in subdirectories
 !*/
