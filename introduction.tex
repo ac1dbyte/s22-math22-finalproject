@@ -1,25 +1,33 @@
 \section{Introduction}
 In essential programming doctrine, it is considered ``best practice'' to write code that
 is concise, understandable, and simple. This paradigm is great for sharing ideas
-with other programmers, but doesn't hold up when we consider some business and 
+with other programmers, but doesn't hold up when we consider some business and
 security realities of the world. For one, having unknown people understand
-your code is not always part of the goal; consider a company that produces 
-high-performance code where much of their business comes from the fact that 
+your code is not always part of the goal; consider a company that produces
+high-performance code where much of their business comes from the fact that
 other companies cannot reproduce their algorithm. If they sell or
 release their software, they would want it to be done in a way that others still
 cannot understand or reproduce its innerworkings.
-Similarly, if code is easy to understand and contains any vulnerabilities, 
+Similarly, if code is easy to understand and contains any vulnerabilities,
 those vulnerabilities will be easier to spot and exploit by unknown, possibly
 malicious actors. Even for relatively secure code, understandability can reveal
 too much of its innerworkings to the public and result in an attack.
-\par So, programmers want to write code that is understandable to the people 
+\par So, programmers want to write code that is understandable to the people
 they work with to enable collaboration, but they want to release software that is not
-able to be reverse engineered. How can we synthesize 
+able to be reverse engineered. How can we synthesize
 these conflicting goals? The primary method is {\itshape software obfuscation}.
 Obfuscation is a process performed on code that transforms it into other code
-which performs essentially the same operations, but is much more difficult to 
+which performs essentially the same operations, but is much more difficult to
 understand or emulate. There are several technical ways to do this, obfuscating
 the control flow of the program or using clever hardware/system-specific tricks
 to dissuade reverse engineers. But these won't always help us hide special values
-and computations that might also be sensitive information--for that, we'll have to 
+and computations that might also be sensitive information--for that, we'll have to
 look to linear algebra.
+
+In this paper, we discuss two techniques of code obfuscation. We first
+introduce bitwise operators and mixed boolean arithmetic to obfuscate
+expressions. We then discuss introduce data types and explain how they and
+their operations can be represented as matrices. In both sections, we provide a
+simple function that we attempt to obfuscate using the aforementioned
+techniques in order to contrast them. We also provide throughout the paper
+Python code samples that are equivalent to our mathematical functions.
