@@ -3,7 +3,16 @@
 A data type is a construct in programming that defines what kind of data a
 variable can hold and the operations that a programmer can do with this type.
 For those who are familiar with programming, integers, floating point numbers,
-booleans and strings come to mind. Of course, we can represent much more than
+booleans and strings come to mind. If these names are unfamiliar, consider the
+following code example in Python:
+\begin{verbatim}
+    is_a_math_paper: bool = True
+    topic: str = "Obfuscation"
+\end{verbatim}
+In the above example, we have a variable ``is\_a\_math\_paper" that is a
+boolean type. It can therefore hold only the Python values ``True" and
+``False." The other variable ``topic" is a of type ``str," which is the data
+type used to represent text. Of course, we can represent much more than
 these primitive types by creating a new type and defining its basic
 operations. We may for example represent a polynomial and define the addition
 of two polynomials as adding the coefficients of the corresponding
@@ -63,7 +72,25 @@ example define $ cf $ as follows
         0 & 1
     \end{bmatrix}
 \end{equation*}
-In this example, $ a $ can be absolutely any number and the abstraction
+While the above is our mathematical definition of the $ cf $ function, we can
+also define it in Python using the scientific library NumPy, which allows us to
+easily represent matrices in code:
+\begin{verbatim}
+    from random import randint
+    from numpy import array
+
+    def cf(x: int) -> np.array:
+        # Generate a random integer between 0 and a 1000
+        a: int = randint(0, 1000)
+        return array([[x, a],
+                      [0, 1]])
+\end{verbatim}
+This function is equivalent to the mathematical definition that precedes it and
+is representing a matrix using NumPy's data type ``array," which allows us to
+create an array of arrays, each representing a row in our desired matrix. Note
+that in this example, there are no restrictions on what $ a $ can be. In our
+Python code, $ a $ will be a random number generated for us that is between $ 0
+$ and $ 1000 $. Now, the abstraction
 function would simply be
 \begin{equation*}
     af \left(
@@ -80,6 +107,12 @@ function would simply be
     \end{bmatrix}
     = ad - bc
 \end{equation*}
+In Python:
+\begin{verbatim}
+    def af(A: np.array) -> int:
+        x = linalg.det(A) # Calculate the determinant
+        return x          # Return the calculated value
+\end{verbatim}
 We can now test our 2 functions
 \begin{equation*}
     af(cf(x)) = x - a(0) = x
@@ -115,24 +148,21 @@ operations to be defined for our matrices to make our obfuscated code harder to
 reverse engineer. It would not be much use to simply represent numbers as
 matrices and then convert them back whenever we want to perform arithmetic or
 other operations. Moreover, the way we define each operation should also be
-sufficiently complex.
+sufficiently complex. It is worth noting, though, that these operations need
+not be defined in the same way normal matrix operations like addition,
+multiplication, etc., are defined. The programmer has complete control over
+these definitions as long as they can prove that they will yield the desired
+output wherever they are used.
 
-It is therefore worth noting that the example above is too simple an
-obfuscation to be used in the real world, but it gives a very good sense of how
+It is therefore worth noting that the example above, although not to be take
+lightly, is too simple an
+obfuscation to be used in the real world. It does, however, give a very good
+sense of how
 obfuscation works. A better example, as proposed by Drape et al., would be to
 have $ n $ be an eigenvector of a $ 2 \times 2 $ matrix. We would then fix the
 second eigenvalue and define a more robust conversion function that is harder
-to decipher. If we wish to make our obfuscation stronger, we can make our
+to decipher. If we wish to make our obfuscation even stronger, we can make our
 matrix bigger for example.
 
 
-\subsection{Obfuscating Matrices and Their Operations}
-The matrix counts as a data type itself, and in the spirit of this paper, it is
-also possible to obfuscate matrices and their operations as well. Converting a
-number into a matrix as we have seen and then obfuscating that matrix makes our
-generated program even harder to decipher, which is what we want.
 
-There are several ways to do obfuscate a matrix, and one that is prominent is
-splitting the matrix into a set of several smaller matrices, called the
-\textbf{split components}. It follows that matrix operations are again defined
-in terms of these components.
