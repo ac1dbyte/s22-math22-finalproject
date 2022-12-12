@@ -11,7 +11,8 @@ take the following sum with $v_i$ representing the $i$th bit of $v$:
 \end{align*}
 For our purposes, that means the most significant (largest value) bit is the topmost
 or first element of $v$ (and we say that $v_0$ is the bottom-most element. Note that
-this is different from how vectors would normally be indexed in linear algebra).
+this is different from how vectors would normally be indexed in linear algebra, but we
+do this to make it simpler).
 This means that, for example, the number $2$ in $\B^4$ would be represented as 
 \begin{align*}
     v = \begin{bmatrix}
@@ -115,14 +116,13 @@ of a top-secret cryptography algorithm:
 \end{align*}
 This means  that $F$ takes three bit-vectors of size 32 bits, $x, y, z \in \B^{32}$, 
 and returns the bit vector equivalent to that given expression. 
-(Note that we can also use 2's complement representation for values
-which we want to be signed, which means that for some
-bit vector $v \in \B^n$, $-v = \neg v + 1$, and a number is negative if and only if
-its first bit is set to 1. This allows us to represent negative
-numbers using only 0's and 1's in a bit vector. Also note here that the results of
-a bitwise operator do {\itshape not change} using 2's complement, only the 
-interpretation of the result. The same goes for arithmetic operators
-the underlying bit vector representation.)
+(We can use 2's complement representation for values which we want to be negative,
+which means that for some bit vector $v \in \B^n$, $-v = \neg v + 1$,
+and a number is negative if and only if its first bit is set to 1.
+This allows us to represent negative numbers using only 0's and 1's in a bit vector. 
+Also note here that the results of a bitwise operator do {\itshape not change} 
+using 2's complement, only the  interpretation of the result. The same goes for 
+arithmetic operators the underlying bit vector representation.)
 By the definition we've given above, we know that $F$ is an MBA expression. 
 In the next section, 
 we will take some tools from linear algebra and use them to obfuscate $F$.
@@ -133,14 +133,13 @@ the expression some MBA expression that is always 0, and re-writing means to
 replace an expression with one that is equivalent. First, let's look at methods
 of generating and proving identities. There is one critically important theorem 
 that will allow us to generate arbitrary MBA identities:
-\thm{Theorem 1}{Let e be a linear MBA expression with the same variable definitions
+\thm{Theorem 1}{Let $e$ be a linear MBA expression with the same variable definitions
 as in Definition 2. Then let $(v_{0,j},...,v_{2^t-1, j})^T$ be the column vector
 of the truth table of the Boolean expression from $e_j$, and let 
 $A = (v_{i,j})_{2^t \times s}$ be the $\B$-matrix of those truth tables over ($\Z/2^n\Z$).
 Let $Y_{s \times 1} = (y_0, \dots, y_{s-1})^T$ be a vector of $s$ variables over
 $(\Z/2^n\Z)$. Then $e = 0$ if and only if $AY = 0$ has a solution with $Y = (a_0, ..., a_s-1)^T$.}
-\pf{
-    Then, we need to prove that $AY = 0$ with $Y = (a_0, ..., a_{s-1})^T \implies e = 0$. 
+{\textbf Proof:} Then, we need to prove that $AY = 0$ with $Y = (a_0, ..., a_{s-1})^T \implies e = 0$. 
     Let $A Y = 0$ with $Y = (a_0, ..., a_{s-1})^T$. Let $f_j(x_{1,i}, ..., x_{t, i})$
     represent the bitwise expression for $e_j$ on the $i$th bits of $(x_1, ..., x_t)$, 
     such that $e_j(x_1, ..., x_t) = \begin{bmatrix}
@@ -167,8 +166,7 @@ $(\Z/2^n\Z)$. Then $e = 0$ if and only if $AY = 0$ has a solution with $Y = (a_0
     \begin{align*}
         \sum_{j=0}^{s-1} a_j \sum_{i=0}^{n-1} f_j(x_{1,i}, ..., x_{t, i}) \cdot 2^{i} = 0
     \end{align*}
-    and therefore $e = 0$.
-}
+    and therefore $e = 0$. \qed
 \par A lot of difficult notation and background goes into that proof, but 
 to highlight the important part, what this theorem says is that constructing
 a matrix of truth tables $A$ from some functions $f_j$ on some bit vectors $(x_1, ..., x_t)$, 
@@ -183,9 +181,9 @@ of the following expressions:
     f_4(x,y) &= \neg x\\
     f_5(x,y) &= -1
 \end{align*}
-Then, we take the truth tables for each of these expressions and form them
-into a column vector, then compose them into a matrix. In this case, we get 
-the following:
+Then, we take the truth tables for each of these expressions in $\B$ 
+and form them into a column vector, then compose them into a matrix.
+In this case, we get the following:
 \begin{align*}
     A =
     \begin{bmatrix}
@@ -195,9 +193,7 @@ the following:
         1 & 1 & 0 & 0 & 0 & 1\\
     \end{bmatrix}
 \end{align*}
-This matrix is composed of truth table values for the following functions (where 
-$f_i$ represents the function in the $i$th column) :
-(Where we've defined -1 to be all 1's as in two's complement representation).
+(Where we've defined -1 to be all 1's as in 2's complement representation)
 Then, solving for $Ax = 0$, we can take some solution:
 \begin{align*}
     x = \begin{bmatrix}
@@ -212,12 +208,14 @@ we get the following equation:
 So, we generated an MBA identity by just inputting some expressions we would like to 
 have seen in the final result. Great! Now, we did this by composing $A$ under the 
 assumption that all of our variables were 1-bit large. If we were working in the $n$-bit
-space, $A$ would become much larger. But, there's another useful theorem here, which
-we will describe the mathematical justification for, but not prove.
+space, $A$ would become much larger and be more difficult to find a solution for. 
+Luckily, there's another useful theorem here, which
+we will describe the mathematical justification for, but not rigorously prove.
 \thm{Theorem 2}{Let $e : (\B^1)^t \rightarrow \B^1$ be an MBA expression such that
-    $e = 0$. Then, for any word-size $n$, $e = 0$.
+    $e = 0$. Then, for any word-size $n$, $e : (\B^n)^t \rightarrow \B^n = 0$.
 }
-To briefly look at why this is the case, consider the following in $\B^n$:
+In other words, any MBA identity that holds in $\B$ also holds in $\B^n$.
+To briefly look at why this is the case, consider the following in $\B^1$:
 \begin{align*}
     e = \sum_{j=0}^{s-1}a_j \cdot e_j(x_1, ..., x_t) &= \sum_{j=0}^{s-1} a_j \cdot \begin{bmatrix}
     f_j(x_{1, 0}, ..., x_{t, 0})
@@ -296,3 +294,7 @@ several times to obfuscate with the $z$ term and make the expression look as com
 as we want. To ensure that our results are correct, we tested that the results of 
 these expressions are equivalent for several thousand random values and found that
 it succeeded each test.
+\par It's worthwhile to point out that obfuscating code arbitrarily is not a great idea,
+as there are performance concerns once the expression starts getting too big, especially
+if we expect to be using it very often. Therefore, it's a matter of cost-benefit
+analysis to decide how much to use this kind of MBA obfuscation. 
