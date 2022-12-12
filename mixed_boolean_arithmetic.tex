@@ -7,18 +7,33 @@ variable. That means each number is represented in memory as a bit-vector of
 the form $\{0,1\}^n$, where $n$ is the ``word size'', that is, the maximum 
 size of a given number. Using these bit-vector numbers, we can use different
 operations based on how we treat them, I.E. using bitwise operators such as
-$\ll$ and $\gg$ for shifting bits right and left, $\land$ and $\lor$, $\neg$, 
-and $\oplus$, or using traditional arithmetic operators $+, -, \times,$ etc.
+$\ll$ and $\gg$ for shifting bits right and left, $\land$ and $\lor$ (bitwise AND and OR), $\neg$ (bitwise NOT), 
+and $\oplus$ (bitwise XOR), or using traditional arithmetic operators $+, -, \times,$ etc.
 When using bitwise operators, it is certainly more clear to treat the 
 number as a bit-vector, while when using traditional arithmetic operators
-we get the same result by taking the result of normal arithmetic over the ring 
-($\Z/2^n\Z$) (since we can't increase the word size, any time the result we
-get is larger than can be represented in $\{0,1\}^n$, the upper bits are truncated).
-\par Now, to formally define an expression of this type (will fill in ?'s in final draft):
-\thm{Definition ?} {Let $n,s,t \in \N$, $x_i$ be a variable over $\{0,1\}^n$ for
+we get the same result by taking the result of normal arithmetic over the modular ring 
+($\Z/2^n\Z$). This is because when doing arithmetic on bit-vectors of a set size, 
+any time the result we get is larger than can be represented in $n$ bits, the result
+is taken modulo $2^n$.
+\par As an aside for those less comfortable with the bitwise operators defined above, 
+this is an example of a truth table, which shows the given values of binary 1-bit
+numbers on the left, and in the next columns the corresponding value of an 
+expression including some of the operators we've defined above.
+\begin{align*}
+    \begin{tabular}{c|c|c|c|c|c}
+        $x$ & $y$ & $\neg x$ & $x \oplus y$ & $x \land y$ & $x \lor y$\\
+        \hline
+        0 & 0 & 1 & 0 & 0 & 0\\
+        1 & 0 & 0 & 1 & 0 & 1\\
+        0 & 1 & 1 & 1 & 0 & 1\\
+        1 & 1 & 0 & 0 & 1 & 0\\
+    \end{tabular}
+\end{align*}
+\par Now, to formally define a mixed boolean arithmetic expression:
+\thm{Definition 1} {Let $n,s,t \in \N$, $x_i$ be a variable over $\{0,1\}^n$ for
 $i = 1,...,t$, and $e_j : (\{0,1\}^n)^t \rightarrow \{0,1\}^n$ be a bitwise expression for
 $j = 1,...,s$. Let $a_j\in \{0,1\}^n$ be a coefficient for $j = 1,...,s$.
-Then, a linear MBA expression $e$ is an expression that can be written as follows:
+Then, a linear MBA (mixed boolean arithmetic) expression $e$ is an expression that can be written as follows:
 \begin{align*}
     e(x_1, ..., x_t) = \sum_{j=1}^s a_j e_j(x_1,...,x_t)
 \end{align*}
@@ -27,21 +42,11 @@ Then, a linear MBA expression $e$ is an expression that can be written as follow
 arithmetic
 expressions, we can imagine several situations where a programmer might use expressions 
 that they would rather keep secret. In cryptography-relevant code, we may use any
-number of cryptographic methods that are composed of MBA (mixed boolean arithmetic)
+number of cryptographic methods that are composed of MBA 
 expressions
 and wish to keep the exact constituent operations hidden 
 to dissuade attackers. 
 \\
-\begin{align*}
-    \begin{tabular}{c|c|c}
-        $x$ & $y$ & $x \oplus y$ \\
-        \hline
-        0 & 0 & 0 \\
-        1 & 0 & 1 \\
-        0 & 1 & 1 \\
-        1 & 1 & 0 \\
-    \end{tabular}
-\end{align*}
 \subsection{Mixed Boolean Arithmetic in Linear Algebra}
 Now, there are two ways to re-write an MBA expression as something more complex, 
 re-writing and inserting identities. Inserting identities means to tag onto
@@ -50,16 +55,28 @@ replace an expression with one that is equivalent. First, let's look at methods
 of generating and proving identities. There is one critically important theorem 
 that will allow us to generate arbitrary MBA identities:
 \thm{Theorem ?}{Let e be a linear MBA expression with the same variable definitions
-as in Definition ?. Then let $(v_{0,j},...,v_{2^t-1, j})$ be the column vector
+as in Definition 1. Then let $(v_{0,j},...,v_{2^t-1, j})^T$ be the column vector
 of the truth table of the Boolean expression from $e_j$, and let 
 $A = (v_{i,j})_{2^t \times s}$ be the $\{0,1\}$ matrix of truth tables over ($\Z/2^n\Z$).
 Let $Y_{s \times 1} = (y_0, \dots, y_{s-1})^T$ be a vector of $s$ variables over
 $(\Z/2^n\Z)$. Then $e = 0$ if and only if $AY = 0$ has a solution over $(\Z/2^n\Z)$.}
 \pf{INSERT PROOF IN FINAL DRAFT}
-What this theorem essentially allows us to do is build any matrix $A$
+
+\par What this theorem essentially allows us to do is build any matrix $A$
 composed of column vectors that are truth table values, then solve the 
 equation $Ax = 0$ for some vector $x$, and we'll have an identity MBA expression.
-For example, consider the matrix:
+\par For example, consider that we wanted to compose an MBA identitity consisting 
+of the following expressions:
+\begin{align*}
+    f_0(x,y) &= x\\
+    f_1(x,y) &= y\\
+    f_2(x,y) &= x \oplus y\\
+    f_3(x,y) &= x \lor (\neg y)\\
+    f_4(x,y) &= -1
+\end{align*}
+Then, we take the truth tables for each of these expressions and form them
+into a column vector, then compose them into a matrix. In this case, we get 
+the following:
 \begin{align*}
     F = \begin{bmatrix}
         0 & 0 & 0 & 1 & 1\\
@@ -68,17 +85,8 @@ For example, consider the matrix:
         1 & 1 & 0 & 1 & 1\\
     \end{bmatrix}
 \end{align*}
-{\color{blue} NOTE: here we will have to include a brief explanation of truth tables and two's 
-complement.\\}
 This matrix is composed of truth table values for the following functions (where 
 $f_i$ represents the function in the $i$'th column) :
-\begin{align*}
-    f_0(x,y) &= x\\
-    f_1(x,y) &= y\\
-    f_2(x,y) &= x \oplus y\\
-    f_3(x,y) &= x \lor (\neg y)\\
-    f_4(x,y) &= -1
-\end{align*}
 (Where we've defined -1 to be all 1's as in two's complement representation).
 Then, solving for $Ax = 0$, we get:
 \begin{align*}
@@ -91,10 +99,34 @@ we get the following equation:
 \begin{align*}
     x - y - (x \oplus y) -2(x \lor (\neg y)) + 2 =0
 \end{align*}
+
+\noindent
+\begin{minipage}{.5\textwidth}
+    \begin{small}
+    \begin{framed}
+        \begin{verbatim}
+def F(x: int, y: int,
+      z: int) -> int:
+    return (x - y + ~z)
+        \end{verbatim}
+    \end{framed}
+    \end{small}
+\end{minipage}% This must go next to `\end{minipage}`
+\begin{minipage}{.5\textwidth}
+    \begin{framed}
+        \begin{small}
+        \begin{verbatim}
+def G(x: int, y: int,
+      z: int) -> int:
+    return (x - y + ~z)
+        \end{verbatim}
+        \end{small}
+    \end{framed}
+\end{minipage}
 {\color{blue} TODO: Prove that this holds for arbitrarily sized bit-vectors, show other 
 examples, }
 \subsection{Obfuscating Mixed Boolean Arithmetic}
-Now, using the method in the previous section to generate MBA inequalities works well,
+Now, using the method in the previous section to generate MBA identities works well,
 but we can also use it to find MBA equalities that allow us to rewrite our original
 expression. Take the first example:
 \begin{align*} 
@@ -106,10 +138,3 @@ the expression on the right. Since we can generate arbitrary MBA identities,
 we can compose any matrix that includes some of the operations in whichever
 MBA expression we'd like to obfuscate, and then use the resulting equality
 to replace expressions with equivalent ones as long as we'd like to! 
-\par Now, this seems great as we can apparently introduce arbitrary arithmetic
-complexity into whichever expressions we use. But, there are some other 
-considerations here: first and foremost, introducing more complexity harms
-performance, and if the code that we're obfuscating is performance-critical, 
-this is an important trade-off to consider. Secondly, MBA obfuscation 
-isn't perfect, and there are a few ways to combat it.\\
-{\color{blue} TODO: Combatting MBA obfuscation? (too much material?)}
