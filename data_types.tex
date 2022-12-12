@@ -10,7 +10,7 @@ following code example in Python:
     topic: str = "Obfuscation"
 \end{verbatim}
 In the above example, we have a variable \textit{is\_a\_math\_paper} that is a
-boolean type. It can therefore hold only the Python values \textit{True} and
+boolean type. It can therefore only hold the Python values \textit{True} and
 \textit{False}. The other variable \textit{topic} is of type \textit{str},
 which is the data
 type for text. Of course, we can represent much more than
@@ -255,7 +255,8 @@ which is the obfuscated version of our function $ F $:
         0 & 1
     \end{bmatrix}
 \end{equation*}
-Applying the abstraction function on this matrix should return a number that is
+Applying the abstraction function $ af $ on this matrix should return a number
+that is
 the same result as applying $ F $ to the inputs $ x, y, z $.
 
 We can define many more operations beyond addition and multiplication such as
@@ -276,10 +277,9 @@ lightly, is too simple an
 obfuscation to be used in the real world. It does, however, give a very good
 sense of how
 obfuscation works. A better example, as proposed by Drape et al., would be to
-have a conversion function where $ x $ is an eigenvector of a $ 2 \times 2 $
-matrix. We would then fix the
-second eigenvalue. If we wish to make our obfuscation even stronger, we can
-make our matrix bigger for example.
+have a conversion function where $ x $ is an eigenvalue of a $ 2 \times 2 $
+matrix and the second eigenvalue is fixed. If we wish to make our obfuscation
+even stronger, we can make our matrix bigger for example.
 
 
 
