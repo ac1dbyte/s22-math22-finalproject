@@ -203,7 +203,7 @@ Let us first define it:
     \right)
     =
     \begin{bmatrix}
-        -x + 1 & -a + 1  \\
+        -x - 1 & -a - 1  \\
         0      & 1
     \end{bmatrix}
 \end{equation*}
@@ -212,7 +212,7 @@ following matrices:
 \begin{align*}
     \neg z &=
     \begin{bmatrix}
-        -z + 1 & 2 \\
+        -z - 1 & 2 \\
         0      & 1
     \end{bmatrix}
     &x &=
@@ -232,7 +232,7 @@ following matrices:
     \end{bmatrix} \\
      (x + (- y)) + (\neg z) &=
      \begin{bmatrix}
-         x - y -z + 1 & 10 \\
+         x - y -z - 1 & 10 \\
          0            & 1
      \end{bmatrix} &
      22 &=
@@ -242,7 +242,7 @@ following matrices:
      \end{bmatrix} \\
      22((x + (- y)) + (\neg z)) &=
      \begin{bmatrix}
-         22 \cdot (x - y -z + 1) & 200 \\
+         22 \cdot (x - y -z - 1) & 200 \\
          0 & 1
      \end{bmatrix}
 \end{align*}
@@ -251,7 +251,7 @@ which is the obfuscated version of our function $ F $:
 \begin{equation*}
     G(x, y, z) =
     \begin{bmatrix}
-        22 \cdot (x - y -z + 1) & 200 \\
+        22 \cdot (x - y -z - 1) & 200 \\
         0 & 1
     \end{bmatrix}
 \end{equation*}
